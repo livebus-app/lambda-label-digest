@@ -1,15 +1,13 @@
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
-import { Rekognition } from "@aws-sdk/client-rekognition";
 import { S3Event } from "aws-lambda";
-import { nanoid } from "nanoid";
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
+import { SNS } from "@aws-sdk/client-sns";
 const prisma = new PrismaClient()
 
 type DetectLabelsParams = {
   bucketName: string;
   objectName: string;
 };
-
+/* 
 async function detectLabels({ bucketName, objectName }: DetectLabelsParams) {
   const desiredLabels = ["Person", "Knife", "Gun", "Weapon"];
 
@@ -44,47 +42,16 @@ async function insertDynamoDBItem(data: Record<string, any>) {
 
 function countLabel(labels: string[], rekognitionPayload: any) {
   return rekognitionPayload.Labels.filter((label: { Name: string }) => labels.includes(label.Name)).reduce((acc, label) => acc + label.Instances.length, 0);
-}
+} */
 
 const main = async (event: S3Event) => {
-  const objectInfo = event.Records?.[0]?.s3;
-  
-  if (!objectInfo) throw new Error("No object info");
-
-  const { name: bucketName } = objectInfo?.bucket;
-  const { key: objectKey } = objectInfo?.object;
-
-  if (!objectInfo) throw new Error("No object info");
-
-  const rekognitionResponse = await detectLabels({
-    bucketName,
-    objectName: objectKey,
-  });
-
-  const deviceCode = objectKey.substring(0, objectKey.indexOf("/"));
-
-  const device = await prisma.device.findFirst({
-    where: {
-      code: deviceCode,
-    }
-  });
-
-  if (!device) throw new Error("No device found");
-
-  const personCount = countLabel(["Person"], rekognitionResponse);
-  const weaponCount = countLabel(["Knife", "Gun", "Weapon"], rekognitionResponse);
-
-  await prisma.telemetry.create({
-    data: {
-      deviceId: device.id,
-      passengerCount: personCount,
-    }
+  return new SNS({
+    region: "us-east-1",
   })
-  
-  return insertDynamoDBItem({
-    deviceCode,
-    rekognitionPayload: rekognitionResponse,
-  });
+    .publish({
+      TopicArn: "arn:aws:sns:us-east-1:033809494047:teste",
+      Message: JSON.stringify(event),
+    });
 };
 
 export { main };
