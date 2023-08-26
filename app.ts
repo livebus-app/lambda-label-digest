@@ -3,7 +3,11 @@ function countLabel(labels: string[], rekognitionPayload: any) {
 }
 
 const main = async (events: EventPayload[]) => {
-  console.info("chegou um evento aqui!");
+  console.log("chegou um evento aqui!");
+  return {
+    statusCode: 200,
+    body: "Hello World!",
+  }
   const [event] = events;
   const data = JSON.parse(Buffer.from(event.data, 'base64').toString('utf-8'));
   const dynamoPayload = data?.dynamodb?.NewImage?.payload?.S;
