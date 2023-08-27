@@ -17,10 +17,7 @@ const main = async (events: EventPayload[]) => {
     passengerCount: countLabel(['Person'], rekognitionPayload),
   }
 
-  return {
-    statusCode: 200,
-    body: digestedObject,
-  };
+  return digestedObject;
 };
 
 interface EventPayload {
