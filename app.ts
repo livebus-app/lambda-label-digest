@@ -1,5 +1,5 @@
 function countLabel(labels: string[], rekognitionPayload: any) {
-  return rekognitionPayload.Labels.filter((label: { Name: string }) => labels.includes(label.Name)).reduce((acc, label) => acc + label.Instances.length, 0);
+  return rekognitionPayload.Labels.filter((label: { Name: string }) => labels.includes(label.Name)).reduce((acc: number, label: any) => acc + label.Instances.length || 1, 0);
 }
 
 const main = async (events: EventPayload[]) => {
