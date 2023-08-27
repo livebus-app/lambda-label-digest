@@ -10,11 +10,12 @@ const main = async (events: EventPayload[]) => {
 
   if (!dynamoPayload) throw new Error('No payload found');
 
-  const { deviceCode, rekognitionPayload } = JSON.parse(dynamoPayload);
+  const { deviceCode, rekognitionPayload, timestamp } = JSON.parse(dynamoPayload);
 
   const digestedObject = {
     deviceCode,
     passengerCount: countLabel(['Person'], rekognitionPayload),
+    timestamp: timestamp,
   }
 
   return digestedObject;
