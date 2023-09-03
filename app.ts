@@ -11,12 +11,16 @@ const main = async (events: EventPayload[]) => {
 
   const { deviceCode, rekognitionPayload, timestamp, objectKey } = JSON.parse(dynamoPayload) as { deviceCode: string; rekognitionPayload: LabelData; timestamp: number, objectKey: string };
 
+  console.info("Device: ", deviceCode);
+
   const digestedObject = {
     deviceCode,
     objectKey,
     timestamp,
     detectedLabels: rekognitionPayload.Labels.map(label => ({ name: label.Name, count: countLabel([label.Name], rekognitionPayload) })),
   }
+
+  console.info("Digested object", digestedObject);
 
   return digestedObject;
 };
