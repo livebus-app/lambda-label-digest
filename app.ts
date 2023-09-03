@@ -9,13 +9,13 @@ const main = async (events: EventPayload[]) => {
 
   if (!dynamoPayload) throw new Error('No payload found');
 
-  const { deviceCode, rekognitionPayload, timestamp } = JSON.parse(dynamoPayload) as { deviceCode: string; rekognitionPayload: LabelData; timestamp: number };
+  const { deviceCode, rekognitionPayload, timestamp, objectKey } = JSON.parse(dynamoPayload) as { deviceCode: string; rekognitionPayload: LabelData; timestamp: number, objectKey: string };
 
   const digestedObject = {
     deviceCode,
-    passengerCount: countLabel(['Person'], rekognitionPayload),
+    objectKey,
+    timestamp,
     detectedLabels: rekognitionPayload.Labels.map(label => ({ name: label.Name, count: countLabel([label.Name], rekognitionPayload) })),
-    timestamp: timestamp,
   }
 
   return digestedObject;
